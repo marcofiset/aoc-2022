@@ -10,8 +10,8 @@
                      :win  6})
 
 (def part-1-strategy {"X" :rock
-                  "Y" :paper
-                  "Z" :scissors})
+                      "Y" :paper
+                      "Z" :scissors})
 
 (defn part-2-strategy [my-move opponent-move]
   (let [moves {"X" {:rock     :scissors
@@ -51,8 +51,8 @@
 
 (defn parse-plays [strategy input]
   (->> input
-      (str/split-lines)
-      (map #(parse-play strategy %))))
+       (str/split-lines)
+       (map #(parse-play strategy %))))
 
 (defn calculate-score [input strategy]
   (->> input
