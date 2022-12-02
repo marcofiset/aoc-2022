@@ -27,6 +27,6 @@
        (take 3)
        (reduce +)))
 
-(def input (slurp "./day1-input.txt"))
+(def input (slurp "./inputs/day1.txt"))
 (part-1 input)
 (part-2 input)
