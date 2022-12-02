@@ -9,9 +9,21 @@
                      :draw 3
                      :win  6})
 
-(def my-move-map {"X" :rock
+(def part-1-strategy {"X" :rock
                   "Y" :paper
                   "Z" :scissors})
+
+(defn part-2-strategy [my-move opponent-move]
+  (let [moves {"X" {:rock     :scissors
+                    :paper    :rock
+                    :scissors :paper}
+               "Y" {:rock     :rock
+                    :paper    :paper
+                    :scissors :scissors}
+               "Z" {:rock     :paper
+                    :paper    :scissors
+                    :scissors :rock}}]
+    (get-in moves [my-move opponent-move])))
 
 (def opponent-move-map {"A" :rock
                         "B" :paper
@@ -27,26 +39,27 @@
     [:paper :scissors] :loss
     :draw))
 
-(defn parse-play [line]
+(defn parse-play [strategy line]
   (let [[move-1 move-2] (str/split line #"\s")
         opponent-move (opponent-move-map move-1)
-        my-move (my-move-map move-2)
+        my-move (strategy move-2 opponent-move)
         outcome (round-outcome my-move opponent-move)]
-    {:my-move (my-move-map my-move)
-     :opponent-move (opponent-move-map opponent-move)
+    {:my-move my-move
+     :opponent-move opponent-move
      :outcome outcome
      :score (+ (outcome-scores outcome) (play-scores my-move))}))
 
-(defn parse-plays [input]
+(defn parse-plays [strategy input]
   (->> input
       (str/split-lines)
-      (map parse-play)))
+      (map #(parse-play strategy %))))
 
-(defn part-1 [input]
+(defn calculate-score [input strategy]
   (->> input
-       parse-plays
+       (parse-plays strategy)
        (map :score)
        (reduce +)))
 
 (def input (slurp "./inputs/day2.txt"))
-(part-1 input)
+(calculate-score input part-1-strategy)
+(calculate-score input part-2-strategy)
