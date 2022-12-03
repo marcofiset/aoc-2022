@@ -13,13 +13,20 @@
   (let [half-point (/ (count str) 2)]
     [(take half-point str) (drop half-point str)]))
 
-(defn find-common-item [[s1 s2]]
-  (first (intersection (set s1) (set s2))))
+(defn find-common-item [item-lists]
+  (first (apply intersection (map set item-lists))))
 
 (defn part-1 [input]
   (->> input
        str/split-lines
        (transduce (map (comp item-priorities find-common-item split-halves)) + 0)))
 
+(defn part-2 [input]
+  (->> input
+       str/split-lines
+       (partition-all 3)
+       (transduce (map (comp item-priorities find-common-item)) + 0)))
+
 (def input (slurp "./inputs/day3.txt"))
 (part-1 input)
+(part-2 input)
