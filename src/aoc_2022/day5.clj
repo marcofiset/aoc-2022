@@ -67,5 +67,5 @@
          (str/join ""))))
 
 (def input (slurp "./inputs/day5.txt"))
-(solve execute-instruction-9000 input)
-(solve execute-instruction-9001 input)
+(println "part-1" (solve execute-instruction-9000 input))
+(println "part-2" (solve execute-instruction-9001 input))
