@@ -19,10 +19,14 @@
   (min (max value -1) 1))
 
 (defn next-tail-pos [tail head]
-  (if (touching? tail head)
-    tail
-    (let [move (map (comp normalize -) head tail)]
-      (map + tail move))))
+  (if (empty? tail)
+    []
+    (let [[knot & remaining] tail]
+      (if (touching? knot head)
+        tail
+        (let [move (map (comp normalize -) head knot)
+              new-pos (map + knot move)]
+          (concat [new-pos] (next-tail-pos remaining new-pos)))))))
 
 (defn execute-move [state [dir n]]
   (let [n (parse-long n)
@@ -37,13 +41,13 @@
                 (-> state
                     (assoc :head new-head)
                     (assoc :tail new-tail)
-                    (update :visited-positions conj new-tail))))
+                    (update :visited-positions conj (last new-tail)))))
             state moves)))
 
 (defn part-1 []
   (->> input
        parse-moves
-       (reduce execute-move {:head [0 0] :tail [0 0] :visited-positions #{[0 0]}})
+       (reduce execute-move {:head [0 0] :tail (repeat 9 [0 0]) :visited-positions #{[0 0]}})
        :visited-positions
        count))
 
