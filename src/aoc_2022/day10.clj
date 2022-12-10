@@ -24,16 +24,31 @@
                (update :index + 2))
     "noop" (update state :index inc)))
 
-(defn part-1 [input]
-  (let [operations    (parse-operations input)
-        cycle-count   (count-cycles operations)
+(defn- compute-cycles [operations]
+  (let [cycle-count   (count-cycles operations)
         initial-state {:cycles (vec (repeat cycle-count 1)) :index 0}]
     (->> operations
          (reduce execute-operation initial-state)
-         :cycles
+         :cycles)))
+
+(defn part-1 [input]
+  (let [operations (parse-operations input)]
+    (->> (compute-cycles operations)
          (map-indexed (fn [i value] (* value (inc i))))
          (drop 19)
          (take-nth 40)
          (reduce +))))
 
+(defn part-2 [input]
+  (let [cycles (-> input parse-operations compute-cycles)]
+    (->> cycles
+         (partition 40)
+         (map (fn [line]
+                (map-indexed (fn [i x]
+                               (if (<= (abs (- i x)) 1)
+                                 "#" ".")) line)))
+         (map #(str/join "" %))
+         (str/join "\n"))))
+
 (println "part-1:" (part-1 input))
+(println "part-2:\n" (part-2 input))
