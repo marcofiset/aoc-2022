@@ -33,10 +33,10 @@
       (update-in [from :items] (comp vec (partial drop 1)))
       (update-in [to :items] conj value)))
 
-(defn evaluate-and-throw-items [monkeys i]
+(defn evaluate-and-throw-items [worry-reducer monkeys i]
   (let [{:keys [items operation divisible-by true-index false-index]} (get monkeys i)]
     (reduce (fn [monkeys item]
-              (let [new-item-value (quot (operation item) 3)
+              (let [new-item-value (worry-reducer (operation item))
                     target (if (zero? (mod new-item-value divisible-by))
                              true-index false-index)]
                 (-> monkeys
@@ -45,15 +45,16 @@
             monkeys
             items)))
 
-(defn play-round [monkeys _]
-  (reduce evaluate-and-throw-items monkeys (range (count monkeys))))
+(defn play-round [worry-reducer monkeys _]
+  (reduce (partial evaluate-and-throw-items worry-reducer) monkeys (range (count monkeys))))
 
-(defn part-1 []
-  (let [result (reduce play-round monkeys (range 20))]
-    (->> result
+(defn solve [reduce-worry? monkeys iterations]
+  (let [worry-reducer (if reduce-worry? #(quot % 3) identity)]
+    (->> (reduce (partial play-round worry-reducer) monkeys (range iterations))
          (map :inspected-items-count)
          (sort >)
          (take 2)
-         (reduce * 1))))
+         (reduce *))))
 
-(println "part-1:" (part-1))
+(println "part-1:" (solve true monkeys 20))
+(println "part-2:" (solve false monkeys 10000))
