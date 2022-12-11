@@ -49,7 +49,11 @@
   (reduce (partial evaluate-and-throw-items worry-reducer) monkeys (range (count monkeys))))
 
 (defn solve [reduce-worry? monkeys iterations]
-  (let [worry-reducer (if reduce-worry? #(quot % 3) identity)]
+  (let [worry-reducer (if reduce-worry?
+                        #(quot % 3)
+                        (fn [item]
+                          (let [common-multiple (->> monkeys (map :divisible-by) (reduce *))]
+                            (mod item common-multiple))))]
     (->> (reduce (partial play-round worry-reducer) monkeys (range iterations))
          (map :inspected-items-count)
          (sort >)
