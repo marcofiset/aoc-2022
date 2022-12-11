@@ -39,14 +39,18 @@
          (take-nth 40)
          (reduce +))))
 
+(defn draw-line [line]
+  (map-indexed
+   (fn [i x]
+     (if (<= (abs (- i x)) 1)
+       "#" "."))
+   line))
+
 (defn part-2 [input]
   (let [cycles (-> input parse-operations compute-cycles)]
     (->> cycles
          (partition 40)
-         (map (fn [line]
-                (map-indexed (fn [i x]
-                               (if (<= (abs (- i x)) 1)
-                                 "#" ".")) line)))
+         (map draw-line)
          (map #(str/join "" %))
          (str/join "\n"))))
 
